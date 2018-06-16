@@ -16,6 +16,8 @@ const dataModule = (function () {
     // returns methods to the public scope
     return {
         // method places data into the public scope for testing purposes
+        // THESE METHODS WILL NOT RUN AS dataModule.getDogs(); IN THE CONSOLE
+        // WHILE WRAPPED IN THE $(document).ready(function () { above
         getDogs: function () {
             // returns an object of 3 arrays, Names, images, ClickCounters
             return {
