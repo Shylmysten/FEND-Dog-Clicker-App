@@ -1,4 +1,20 @@
 html, body {
+    font-size: 1rem;
     margin: 0;
+}
+
+body {
     padding: 2em 4em;
+}
+
+img {
+    box-shadow: 0 16px 28px 0 rgba(0, 0, 0, .22), 0 25px 55px 0 rgba(0, 0, 0, .21);
+    margin-bottom: 15px;
+    padding: 1em;
+}
+
+li:hover {
+    background-color: #A0C5E8;
+    cursor: pointer;
+    font-weight: 500;
 }
