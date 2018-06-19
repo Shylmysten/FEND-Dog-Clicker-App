@@ -37,7 +37,18 @@ const dataModule = (function () {
             // returns an integer to the updatedClickCounter function in the
             // app controller
             return clickCounted;
+        },
+        // passed an obj from the appcontroller when the admin save button is clicked and adds the user info to the name, images and clickcount array
+        updateDogs: function (obj) {
+            // if the image already exists when save is clicked, then we aren't interested
+            if (data.allDogs.names.includes(obj.name)| data.allDogs.images.includes(obj.image)) {
+                return;
+            }
+            data.allDogs.names.push(obj.name);
+            data.allDogs.images.push(obj.image);
+            data.allDogs.clickCounters.push(parseInt(obj.clickCount));
         }
+
     };
 
 })(); // end of Data Module
@@ -46,12 +57,20 @@ const dataModule = (function () {
 // @@ UI Module controls getting and setting data in the DOM it, it does not
 // have direct access to the data module which keeps data private
 const UIModule = (function () {
+
+    // store the dom selectors to be passed to the appController
     const DOMstrings = {
         imgContainer: '#img-container',
         dogPic: '#dog-picture',
         name: '#name',
         clickCounter: '#clickCount',
-        listItems: '#list-of-names'
+        listItems: '#list-of-names',
+        adminCtrlPnl: '#admin-control-panel',
+        adminBtn: '#admin-btn',
+        adminSave: '#admin-save',
+        inputName: '#inputName',
+        inputUrl: '#inputUrl',
+        inputClicks: '#inputClicks'
     };
 
     // Establishes a method to pass the DOMstrings between modules (PUBLIC)
@@ -70,7 +89,7 @@ const UIModule = (function () {
             // display this Dog's name in the UI
             document.querySelector(DOMstrings.name).innerHTML = obj.name;
             /// display this dog's image
-            document.querySelector('#dog-picture').setAttribute('src', obj.image);
+            document.querySelector(DOMstrings.dogPic).setAttribute('src', obj.image);
             // display this dog's click count
             clickCounter: document.querySelector(DOMstrings.clickCounter).innerHTML= parseInt(obj.counter);
         },
@@ -78,12 +97,32 @@ const UIModule = (function () {
         updateClickCounter: function (clickCount) {
             // display the current click count
             document.querySelector(DOMstrings.clickCounter).innerHTML= clickCount;
+        },
+        // passed in an obj with a name, image and clickcount from the app controller to be displayed in the UI
+        makeList: function (obj) {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `<li>${obj.name}</li>`;
+            $(DOMstrings.listItems)[0].appendChild(listItem);
+        },
+        // gets the object currently being displayed and updates the admin fields with the new object
+        getCurObj: function () {
+            $(DOMstrings.inputName)[0].value = $(DOMstrings.name)[0].innerHTML
+            $(DOMstrings.inputUrl)[0].value = $(DOMstrings.dogPic)[0].getAttribute('src');
+            $(DOMstrings.inputClicks)[0].value = $(DOMstrings.clickCounter)[0].innerHTML;
+        },
+        // gets the user input and returns an Obj to the app controller when called
+        // returns {name, image, clickCount}
+        getInput: function () {
+          return {
+            name: $(DOMstrings.inputName)[0].value,
+            image: $(DOMstrings.inputUrl)[0].value,
+            clickCount: $(DOMstrings.inputClicks)[0].value
+          }
         }
-
 
     };
 
-})();
+})(); // End of UI Module
 
 //@@ @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 //@@ App Controller is passed in both the Data Module and UI Module to allow
@@ -108,38 +147,79 @@ const appController = (function (dataMdl, UIMdl) {
 
         // listen for clicks on the list of names
         $(DOM.listItems).click(function (e) {
+
             // 1. prevent the default action
             e.preventDefault();
-            // 2. loop through array & determine which image was clicked on
-            data.names.forEach(function (cur, idx) {
-                // prevents actions unless the current name in our array
-                // matches the name in the list that was clicked on
-                if (cur === e.target.innerText) {
-                    // call displayNewDog function and pass it the idx of the
-                    // cur element
-                    displayNewDog(idx);
-                }
-            });
 
 
+            // 2. if the current image exist in the names array, return its idx position
+            const idx = ($.inArray(e.target.innerText, data.names));
+
+            // if the idx = -1 the target does not exist in the array, we aren't interested
+            if ( idx != -1) {
+                // call displayNewDog function and pass it the idx of the element that was clicked on in the names array
+                displayNewDog(idx);
+                // call getCurObj() in the UI to update the admin form when the object being displayed is changed by the user
+                UIMdl.getCurObj();
+            }
         });
 
-
+        // listen for clicks on the image to count clicks
         $(DOM.imgContainer).click(function(e) {
+
             // 1. prevent Default
             e.preventDefault();
-            // 2. loop through array & determine which image was clicked on
-            data.images.forEach(function (cur, idx) {
 
-                // prevents actions unless the current image in our array
-                // matches the src attribute of the clicked image
-                if (cur === e.target.getAttribute('src')) {
-                    // call updateClickCounter and pass it the idx of the
-                    // current element
-                    updateClickCounter(idx);
-                }
-            });
+            // 2. if the current image exist in the images array, return the idx position
+            const idx = ($.inArray(e.target.getAttribute('src'), data.images));
+            
+            // if the idx = -1 the target does not exist in the array, we aren't interested
+            if ( idx != -1) {
+                // update the objects clickcount
+                updateClickCounter(idx);
+            }
         });
+
+        // listen for clicks on the admin button
+        $(DOM.adminCtrlPnl).click(function (e) {
+            e.preventDefault();
+
+            // if admin button is clicked
+            if ('#'+e.target.id === DOM.adminBtn) {
+                // Toggles the hidden class on and off to hide the container when the admin button is clicked
+                $('.form-container')[0].classList.toggle('hidden');
+                // get the current object being displayed in the UI and update the admin Fields
+                UIMdl.getCurObj();
+            }
+
+            // if saved button is clicked
+            if ('#'+e.target.id === DOM.adminSave) {
+                // 1. get the input fields obj contains {name, imageUrl, #ofclicks}
+                const obj = UIMdl.getInput();
+
+                // 2. update data with Admin input on save
+                dataMdl.updateDogs(obj);
+
+                // 3. update the UI with new Dog
+                // update the names list
+                makeList();
+                // update the object being displayed
+                displayNewDog(data.names.length-1);
+            }
+        });
+    }
+
+
+
+    // @@ Class newDog defines newDog Obj
+    // @@ Constructor is passed the index and uses it to create a newDog obj
+    // return: obj with an images src, an image name, the  cur clickcount
+    class newDog {
+        constructor (idx) {
+            this.image = data.images[idx];
+            this.name = data.names[idx];
+            this.counter = data.clickCounters[idx];
+        };
     }
 
     // ***** begin Private functions *****//
@@ -149,28 +229,28 @@ const appController = (function (dataMdl, UIMdl) {
     // the IDENTITY of the "Dog" that was selected because the "Dog's" info
     // is positioned identically in each array
     const  displayNewDog = function(idx) {
-        // @@ Class newDog defines newDog Obj
-        // @@ Constructor is passed the index and uses it to create a newDog obj
-        // return: obj with an images src, an image name, the  cur clickcount
-        class newDog {
-            constructor (idx) {
-                this.image = data.images[idx];
-                this.name = data.names[idx];
-                this.counter = data.clickCounters[idx];
-            };
-        }
-
 
         // update the dog being displayed in the UI with the user's selection
         UIMdl.displayNewDog(new newDog(idx));
 
-    }; // end  displayNewDog function
+    }; // end displayNewDog function
 
     const updateClickCounter = function (idx) {
         // update the clickCounter in the dataModule
         let clickCount = dataMdl.updateClickCounter(idx);
         // update the clickCounter in the UI
         UIMdl.updateClickCounter(clickCount);
+        // Update the click Count in the Admin Panel
+        UIMdl.getCurObj();
+    };
+
+    const makeList =  function () {
+        $(DOM.listItems).empty();
+        // loop through the names array and make a list item for each name in the Array
+        data.names.forEach(function (cur, idx) {
+            // Update the UI with the newDog name
+            UIMdl.makeList(new newDog(idx));
+        });
     };
 
     // return public methods
@@ -179,8 +259,10 @@ const appController = (function (dataMdl, UIMdl) {
        // sets up a METHOD to pass into PUBLIC to initialize the application
        init: function() {
          console.log('Application has started.');
-
-
+         // make the clickable list of Dog
+         makeList();
+         // display first dog in the list
+         UIMdl.displayNewDog(new newDog(0));
          // calls all EventListeners to begin listening for events
          setupEventListeners();
         }

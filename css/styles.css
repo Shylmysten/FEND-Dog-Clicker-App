@@ -13,8 +13,17 @@ body {
     padding: 1em;
 }
 
+
+.hidden {
+  display: none;
+}
+
 li:hover {
     background-color: #A0C5E8;
     cursor: pointer;
     font-weight: 500;
+}
+
+.form-control {
+  padding: 2.5em;
 }
