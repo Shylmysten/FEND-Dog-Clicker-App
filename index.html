@@ -49,21 +49,25 @@
                   <button id="admin-btn" class="btn btn-info">Admin</button>
               </div>
               <div class="form-container hidden mt-4">
-                <h2 class="text-center">Admin Entry</h2>
+                <h3 class="text-center">Admin Entry</h3>
                 <form class="form-control p-5">
                     <div class="justify-content-between p-1">
                         <label for="inputName">Name:</label>
                         <input id="inputName" class="ml-1" type="text" placeholder="Name" />
                     </div>
-                    <div class="justify-content-between p-1">
+                    <div class="justify-space-between p-1">
                         <label for="inputUrl" class="mt-2">ImgUrl:</label>
                         <input id="inputUrl" type="text" placeholder="ImgUrl" />
                     </div>
-                    <div class="justify-content-between p-1">
+                    <div class="justify-space-between p-1">
                         <label for="inputClicks" class="mt-2">#clicks:</label>
                         <input id="inputClicks" type="text" placeholder="#clicks" />
                     </div>
-                <button id="admin-save" class="btn btn-primary float-right">Save</button>
+                    <div class="d-flex justify-content-end">
+                        <button id="admin-cancel" class="btn btn-primary mr-1">Cancel</button>
+                    <button id="admin-save" class="btn btn-primary ml-1">Save</button>
+                    </div>
+
                 </form>
 
               </div>

@@ -69,6 +69,7 @@ const UIModule = (function () {
         adminCtrlPnl: '#admin-control-panel',
         adminBtn: '#admin-btn',
         adminSave: '#admin-save',
+        adminCancel: '#admin-cancel',
         inputName: '#inputName',
         inputUrl: '#inputUrl',
         inputClicks: '#inputClicks'
@@ -211,7 +212,11 @@ const appController = (function (dataMdl, UIMdl) {
                 displayNewDog(data.names.length-1);
                 // rehide the admin panel
                 UIMdl.toggleAdmin();
+            }
 
+            if ('#'+e.target.id === DOM.adminCancel) {
+                // rehide the admin panel
+                UIMdl.toggleAdmin();
             }
         });
     }
