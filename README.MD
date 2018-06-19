@@ -26,3 +26,5 @@ Check it out at this [link](https://shylmysten.github.io/FEND-Dog-Clicker-App/)
 
 -   When a cat name is clicked in the list, the cat display area should update to show the data for the selected cat.
 -   The number of clicks in the cat area should be unique to each cat, and should increment when the cat's picture is clicked.
+- The Admin area will update with the new object with the list of names is clicked.
+- Input is added to the Data in the Data Module
