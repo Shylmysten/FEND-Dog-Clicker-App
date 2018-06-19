@@ -62,6 +62,7 @@ const UIModule = (function () {
     const DOMstrings = {
         imgContainer: '#img-container',
         dogPic: '#dog-picture',
+        formContainer: '.form-container',
         name: '#name',
         clickCounter: '#clickCount',
         listItems: '#list-of-names',
@@ -118,6 +119,9 @@ const UIModule = (function () {
             image: $(DOMstrings.inputUrl)[0].value,
             clickCount: $(DOMstrings.inputClicks)[0].value
           }
+        },
+        toggleAdmin: function () {
+          $(DOMstrings.formContainer)[0].classList.toggle('hidden');
         }
 
     };
@@ -172,7 +176,7 @@ const appController = (function (dataMdl, UIMdl) {
 
             // 2. if the current image exist in the images array, return the idx position
             const idx = ($.inArray(e.target.getAttribute('src'), data.images));
-            
+
             // if the idx = -1 the target does not exist in the array, we aren't interested
             if ( idx != -1) {
                 // update the objects clickcount
@@ -187,7 +191,7 @@ const appController = (function (dataMdl, UIMdl) {
             // if admin button is clicked
             if ('#'+e.target.id === DOM.adminBtn) {
                 // Toggles the hidden class on and off to hide the container when the admin button is clicked
-                $('.form-container')[0].classList.toggle('hidden');
+                UIMdl.toggleAdmin();
                 // get the current object being displayed in the UI and update the admin Fields
                 UIMdl.getCurObj();
             }
@@ -205,6 +209,9 @@ const appController = (function (dataMdl, UIMdl) {
                 makeList();
                 // update the object being displayed
                 displayNewDog(data.names.length-1);
+                // rehide the admin panel
+                UIMdl.toggleAdmin();
+
             }
         });
     }
