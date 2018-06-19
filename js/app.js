@@ -213,7 +213,7 @@ const appController = (function (dataMdl, UIMdl) {
                 // rehide the admin panel
                 UIMdl.toggleAdmin();
             }
-
+            // if cancel button is clicked
             if ('#'+e.target.id === DOM.adminCancel) {
                 // rehide the admin panel
                 UIMdl.toggleAdmin();
